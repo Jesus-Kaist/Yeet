@@ -1,10 +1,5 @@
 const commando = require('discord.js-commando');
-const dispatcher = require('ytdl-core');
 const ytdl = require('ytdl-core');
-const { escapeMarkdown } = require('discord.js');
-const { guild } = require('discord.js');
-const { oneLine, stripIndents } = require('common-tags');
-const id = require('ytdl-core');
 
 module.exports = class play extends commando.Command {
     constructor(client) {
