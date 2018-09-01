@@ -1,5 +1,7 @@
 const commando = require('discord.js-commando');
+const dispatcher = require('ytdl-core');
 const ytdl = require('ytdl-core');
+
 
 module.exports = class play extends commando.Command {
     constructor(client) {
@@ -41,14 +43,9 @@ module.exports = class play extends commando.Command {
                 connection: null,
                 songs: [],
                 volume: 5,
-                playing: true
-            };
+            };         
 
-            console.log(`**${queueConstruct}**`)
-
-            
-
-            queue.set(msg.guild.id, queueConstruct);
+            queue.set(msg.guild.id, queueConstruct);    
 
             queueConstruct.songs.push(song);    
 
@@ -57,7 +54,6 @@ module.exports = class play extends commando.Command {
                 var connection = await voiceChannel.join();
                 queueConstruct.connection = connection;
                 play(msg.guild, queueConstruct.songs[0])
-                console.log("Take notes please Kai" + queueConstruct.songs)
             } catch (error) { 
                 console.error('I couldn\'t connect ' + error);
 
@@ -66,9 +62,9 @@ module.exports = class play extends commando.Command {
             }
 
         } else {
-            serverQueue.songs.push(song);
-            console.log(serverQueue.songs);  
-            return msg.say(`**${song.title}** Is now in the queue :smile:`);
+                serverQueue.songs.push(song);
+                console.log("TEST: " + serverQueue.songs)
+                return msg.say(`**${song.title}** Is now in the queue :smile:`);
         }
         return undefined;
 
@@ -80,14 +76,12 @@ module.exports = class play extends commando.Command {
                 queue.delete(guild.id);
                 return;
             }
+            console.log(serverQueue.songs)
 
-        
-            console.log(serverQueue.songs);
-
-            const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
+            const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: "audioonly", retries: 20 }))
                 .on('end', (reason) => {
                     if (reason === 'Stream not generating quickly enough.') console.log ('song ended');
-                    else console.log(reason)
+                    else console.log("error: " + reason)
                     serverQueue.songs.shift();
                     play(guild, serverQueue.songs[0]);   
                 })
@@ -98,4 +92,6 @@ module.exports = class play extends commando.Command {
 
     }   
     
-}   
+}
+
+
